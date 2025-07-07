@@ -4,18 +4,22 @@
       <button
         v-for="(note, key) in noteMap"
         :key="key"
-        @mousedown="startTone(note.frequency)"
+        @mousedown="playTone(note.frequency)"
+        @touchstart.prevent="playTone(note.frequency); resumeAudio()"
         @mouseup="stopTone"
-        @touchstart.prevent="startTone(note.frequency)"
         @touchend.prevent="stopTone"
-        @click="resumeAudio"
+        @mouseleave="stopTone"
         class="note-button"
       >
-        <div class="note-label">
-          <span class="note-key">{{ key }}</span><br />
-          <small class="note-name">{{ note.name }}</small>
-        </div>
-        <button class="add-button" @click.stop="addToSequence(key)" title="Add to sequence">＋</button>
+        <div class="key-text">{{ key }}</div><small>{{ note.name }}</small>
+        <span
+          role="button"
+          tabindex="0"
+          class="add-button"
+          @click.stop="addToSequence(key)"
+          @keydown.enter.space.prevent="addToSequence(key)"
+          title="Add to sequence"
+        >＋</span>
       </button>
     </div>
 
@@ -345,5 +349,11 @@ button {
 
 button:hover {
   background: #444;
+}
+
+.key-text {
+  font-weight: bold;
+  font-size: 1.3rem;
+  text-align: left;
 }
 </style>
