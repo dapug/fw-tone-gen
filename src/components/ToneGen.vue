@@ -4,12 +4,17 @@
       <button
         v-for="(note, key) in noteMap"
         :key="key"
-        @mousedown="playTone(note.frequency)"
+        @mousedown="startTone(note.frequency)"
         @mouseup="stopTone"
-        @mouseleave="stopTone"
+        @touchstart.prevent="startTone(note.frequency)"
+        @touchend.prevent="stopTone"
+        @click="resumeAudio"
         class="note-button"
       >
-        {{ key }}<br /><small>{{ note.name }}</small>
+        <div class="note-label">
+          <span class="note-key">{{ key }}</span><br />
+          <small class="note-name">{{ note.name }}</small>
+        </div>
         <button class="add-button" @click.stop="addToSequence(key)" title="Add to sequence">＋</button>
       </button>
     </div>
@@ -18,7 +23,10 @@
       <h2>Sequence</h2>
       <div class="sequence-notes">
         <div v-for="(key, index) in sequence" :key="index" class="note-button sequence-note">
-          {{ key }}<br /><small>{{ noteMap[key].name }}</small>
+          <div class="note-label">
+            <span class="note-key">{{ key }}</span><br />
+            <small class="note-name">{{ noteMap[key].name }}</small>
+          </div>
           <button class="remove-button" @click="removeFromSequence(index)" title="Remove">&times;</button>
         </div>
       </div>
@@ -57,10 +65,15 @@
     </div>
 
     <p style="margin-top: 2rem; font-size: 0.9rem; color: #555;">
-      This app generates tones for the PTT ID "chirp" for
+      This app generates tones for the PTT ID "chirp" that are compatible with
       <a href="https://www.patreon.com/posts/nicfw-h3-v2-52-131755788" target="_blank" rel="noopener" style="color: #3498db; text-decoration: underline;">
         nicFW TD-H3 v2.52.20
       </a> or greater.
+    </p>
+    <p style="font-size: 0.9rem; color: #555;">
+      Source code available on
+      <a href="https://github.com/dapug/fw-tone-gen" target="_blank" rel="noopener" style="color: #3498db; text-decoration: underline;">
+        GitHub</a>
     </p>
   </div>
 </template>
@@ -101,6 +114,17 @@ const savedSequences = ref<string[][]>(JSON.parse(localStorage.getItem('sequence
 const importText = ref('')
 const importError = ref('')
 const showExportMessage = ref(false)
+
+const resumeAudio = () => {
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume()
+  }
+}
+
+const startTone = (frequency: number) => {
+  resumeAudio()
+  playTone(frequency)
+}
 
 const playTone = (frequency: number) => {
   stopTone()
@@ -198,6 +222,20 @@ const importSequences = () => {
   border-radius: 0.25rem;
   cursor: pointer;
   position: relative;
+  text-align: left;
+}
+
+.note-label {
+  display: inline-block;
+}
+
+.note-key {
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.note-name {
+  font-size: 0.85rem;
 }
 
 .note-button:active {
@@ -237,6 +275,7 @@ const importSequences = () => {
   word-break: break-word;
   white-space: normal;
   overflow-wrap: break-word;
+  text-align: left;
 }
 
 .sequence-note .remove-button {
