@@ -2,6 +2,9 @@
 
 ### A tone generator for the TD-H3 using nicFW v2.52.20+
 
+Live running app:
+https://wonderful-bush-07203d51e.2.azurestaticapps.net/
+
 #### How to use:
 
 1. Download VS Code 
