@@ -1,24 +1,33 @@
 <template>
   <div class="container">
     <div class="note-grid">
-      <button
+      <div
+        class="note-container"
         v-for="(note, key) in noteMap"
         :key="key"
-        @mousedown="startTone(note.frequency)"
-        @mouseup="stopTone"
-        @touchstart.prevent="startTone(note.frequency)"
-        @touchend.prevent="stopTone"
-        @click="resumeAudio"
-        class="note-button"
       >
-        <div class="note-label">
-          <span class="note-key">{{ key }}</span><br />
-          <small class="note-name">{{ note.name }}</small>
-        </div>
-        <button class="add-button" @click.stop="addToSequence(key)" title="Add to sequence">＋</button>
-      </button>
+        <button
+          class="note-button"
+          @mousedown="startTone(note.frequency, true)"
+          @mouseup="stopTone"
+          @touchstart="startTone(note.frequency, true)"
+          @touchend="stopTone"
+          @click="resumeAudio"
+        >
+          <div class="note-label">
+            <span class="note-key">{{ key }}</span><br />
+            <small class="note-name">{{ note.name }}</small>
+          </div>
+        </button>
+        <button
+          class="add-button"
+          @click="addToSequence(key)"
+          title="Add to sequence"
+        >
+          ＋
+        </button>
+      </div>
     </div>
-
     <div class="sequence-section" v-if="sequence.length > 0">
       <h2>Sequence</h2>
       <div class="sequence-notes">
@@ -121,8 +130,8 @@ const resumeAudio = () => {
   }
 }
 
-const startTone = (frequency: number) => {
-  resumeAudio()
+const startTone = (frequency: number, isFromClick = false) => {
+  if (isFromClick) resumeAudio()
   playTone(frequency)
 }
 
@@ -214,6 +223,12 @@ const importSequences = () => {
   gap: 0.5rem;
 }
 
+.note-container {
+  position: relative;
+  display: inline-block;
+  margin: 0.25rem;
+}
+
 .note-button {
   padding: 0.5rem;
   border: none;
@@ -223,6 +238,8 @@ const importSequences = () => {
   cursor: pointer;
   position: relative;
   text-align: left;
+  min-width: 100px; /* optional: ensure space */
+  min-height: 60px;  /* optional: ensure button has space for "+" */
 }
 
 .note-label {
@@ -244,8 +261,8 @@ const importSequences = () => {
 
 .add-button {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 2px;   /* Adjusted to float inside */
+  right: 2px; /* Adjusted to float inside */
   background: #28a745;
   border: none;
   color: white;
@@ -254,6 +271,8 @@ const importSequences = () => {
   padding: 0 0.4rem;
   border-radius: 3px;
   cursor: pointer;
+  z-index: 2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Optional: subtle depth */
 }
 
 .sequence-section,
