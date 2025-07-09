@@ -18,20 +18,20 @@
             <span class="note-key">{{ key }}</span><br />
             <small class="note-name">{{ note.name }}</small>
           </div>
-        </button>
-        <button
-          class="add-button"
-          @click="addToSequence(key)"
-          title="Add to sequence"
-        >
-          ＋
+          <button
+            class="add-button"
+            @click.stop="addToSequence(key)"
+            title="Add to sequence"
+          >
+            ＋
+          </button>
         </button>
       </div>
     </div>
     <div class="sequence-section" v-if="sequence.length > 0">
       <h2>Sequence</h2>
       <div class="sequence-notes">
-        <div v-for="(key, index) in sequence" :key="index" class="note-button sequence-note">
+        <div v-for="(key, index) in sequence" :key="index" class="sequence-note">
           <div class="note-label">
             <span class="note-key">{{ key }}</span><br />
             <small class="note-name">{{ noteMap[key].name }}</small>
@@ -238,8 +238,8 @@ const importSequences = () => {
   cursor: pointer;
   position: relative;
   text-align: left;
-  min-width: 100px; /* optional: ensure space */
-  min-height: 60px;  /* optional: ensure button has space for "+" */
+  min-width: 100px;
+  min-height: 60px;
 }
 
 .note-label {
@@ -259,20 +259,26 @@ const importSequences = () => {
   background-color: #1d6fa5;
 }
 
-.add-button {
+.add-button,
+.sequence-note .remove-button {
   position: absolute;
-  top: 2px;   /* Adjusted to float inside */
-  right: 2px; /* Adjusted to float inside */
+  top: 4px;
+  right: 4px;
   background: #28a745;
   border: none;
   color: white;
-  font-size: 1rem;
+  font-size: 1.1rem;
   line-height: 1;
   padding: 0 0.4rem;
   border-radius: 3px;
   cursor: pointer;
   z-index: 2;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Optional: subtle depth */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.sequence-note .remove-button {
+  background: #666;
+  content: "×";
 }
 
 .sequence-section,
@@ -295,20 +301,14 @@ const importSequences = () => {
   white-space: normal;
   overflow-wrap: break-word;
   text-align: left;
-}
-
-.sequence-note .remove-button {
-  position: absolute;
-  top: 2px;
-  right: 4px;
-  background: #666;
-  border: none;
-  color: white;
   font-size: 0.75rem;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0 0.25rem;
-  border-radius: 2px;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.25rem;
+  background-color: #3498db;
+  color: white;
+  border: none;
+  min-width: 50px;
+  min-height: 45px;
 }
 
 .saved-list {
